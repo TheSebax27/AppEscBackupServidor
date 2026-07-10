@@ -1,0 +1,16 @@
+# Visual Studio
+.vs/
+
+# Build
+bin/
+obj/
+
+# Usuario
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
