@@ -1,0 +1,69 @@
+﻿<Window x:Class="BackupSyncApp.ConexionBackupSqlWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Conexión de backup SQL" Height="560" Width="480"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="15">
+
+            <TextBlock Text="Nombre (ej: Servidor 180)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtNombre" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Servidor SQL - IP" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtServidor" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Usuario SSH" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtUsuario" Margin="0,0,0,10"/>
+
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Ruta llave privada SSH (NUESTRA, para conectarnos)" Margin="0,0,0,3"/>
+                    <TextBox x:Name="TxtLlave"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="..." Width="30" Margin="5,18,0,0"
+                        VerticalAlignment="Top" Click="BtnBuscarLlave_Click"/>
+            </Grid>
+
+            <Separator Margin="0,5,0,10"/>
+
+            <TextBlock Text="Instancia SQL (ej: DESKTOP-SIS\SQLEXPRESS)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtInstanciaSql" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Identificador (ej: backup_180)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtIdentificador" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Ruta backup local en el satélite (ej: C:\Backup_Local_180)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtRutaBackupLocal" Margin="0,0,0,10"/>
+
+            <Separator Margin="0,5,0,10"/>
+
+            <CheckBox x:Name="ChkEnviarAlCentral" Content="Enviar el ZIP al servidor central por SCP"
+                      Margin="0,0,0,10" Checked="ChkEnviarAlCentral_Changed" Unchecked="ChkEnviarAlCentral_Changed"/>
+
+            <StackPanel x:Name="PanelCentral">
+                <TextBlock Text="Usuario SSH del central" Margin="0,0,0,3"/>
+                <TextBox x:Name="TxtCentralUsuario" Margin="0,0,0,10"/>
+
+                <TextBlock Text="IP del servidor central" Margin="0,0,0,3"/>
+                <TextBox x:Name="TxtCentralIp" Margin="0,0,0,10"/>
+
+                <TextBlock Text="Ruta destino en el central" Margin="0,0,0,3"/>
+                <TextBox x:Name="TxtCentralDestino" Margin="0,0,0,10"/>
+
+                <TextBlock Text="Ruta llave SSH (la que YA está guardada en el satélite)" Margin="0,0,0,3"/>
+                <TextBox x:Name="TxtCentralLlave" Margin="0,0,0,10"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                <Button Content="Cancelar" Width="90" Margin="0,0,10,0" Click="BtnCancelar_Click"/>
+                <Button Content="Guardar" Width="90" Click="BtnGuardar_Click"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

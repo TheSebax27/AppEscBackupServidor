@@ -19,6 +19,7 @@ public partial class MainWindow : Window
     private bool _sincronizando = false;
     private CancellationTokenSource? _cts;
     private SincronizacionService? _servicioActivo;
+    private object? _tokenSincronizacionActual;
 
     public MainWindow()
     {
@@ -111,6 +112,9 @@ public partial class MainWindow : Window
 
     private async Task EjecutarSincronizacion(ConexionBackup conexion)
     {
+        var miToken = new object();
+        _tokenSincronizacionActual = miToken;
+
         _sincronizando = true;
         BtnCancelar.IsEnabled = true;
         BarraProgreso.Value = 0;
@@ -125,16 +129,26 @@ public partial class MainWindow : Window
 
         // Los eventos del servicio llegan desde un hilo de fondo (Task.Run),
         // así que usamos Dispatcher.Invoke para tocar la UI de forma segura.
+        // Además comparamos el token: si esta sincronización ya fue "abandonada"
+        // (ver BtnCancelar_Click), ignoramos cualquier evento tardío suyo.
         servicio.Log += texto =>
+        {
+            if (_tokenSincronizacionActual != miToken) return;
             Dispatcher.Invoke(() => AgregarLog(texto, Brushes.DimGray));
+        };
 
         servicio.ArchivoActualizado += evento =>
+        {
+            if (_tokenSincronizacionActual != miToken) return;
             Dispatcher.Invoke(() => ManejarEventoArchivo(evento));
+        };
 
         try
         {
             var resumen = await Task.Run(
                 () => servicio.Sincronizar(conexion, _cts.Token), _cts.Token);
+
+            if (_tokenSincronizacionActual != miToken) return; // ya fue abandonada
 
             TxtEstadoActual.Text = $"Finalizado: {conexion.Nombre}";
             TxtResumen.Text =
@@ -145,11 +159,13 @@ public partial class MainWindow : Window
         }
         catch (OperationCanceledException)
         {
+            if (_tokenSincronizacionActual != miToken) return;
             TxtEstadoActual.Text = "Cancelado por el usuario";
             AgregarLog("=== CANCELADO POR EL USUARIO ===", Brushes.DarkOrange);
         }
         catch (ValidacionSincronizacionException ex)
         {
+            if (_tokenSincronizacionActual != miToken) return;
             TxtEstadoActual.Text = "Origen o destino no existente, por favor verificar";
             AgregarLog($"[VALIDACIÓN] {ex.Message}", Brushes.DarkOrange);
             MessageBox.Show(ex.Message, "Origen o destino no existente, por favor verificar",
@@ -157,6 +173,8 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
+            if (_tokenSincronizacionActual != miToken) return;
+
             if (_cts?.IsCancellationRequested == true)
             {
                 TxtEstadoActual.Text = "Cancelado por el usuario";
@@ -172,10 +190,17 @@ public partial class MainWindow : Window
         }
         finally
         {
-            _sincronizando = false;
-            BtnCancelar.IsEnabled = false;
-            _cts = null;
-            _servicioActivo = null;
+            // Si el token ya no coincide, esta tarea fue abandonada por el
+            // "watchdog" de Cancelar (ver BtnCancelar_Click) y puede que ya
+            // haya una sincronización nueva corriendo — no tocamos su estado.
+            if (_tokenSincronizacionActual == miToken)
+            {
+                _sincronizando = false;
+                BtnCancelar.IsEnabled = false;
+                _cts = null;
+                _servicioActivo = null;
+                _tokenSincronizacionActual = null;
+            }
         }
     }
 
@@ -225,11 +250,44 @@ public partial class MainWindow : Window
         }
     }
 
-    private void BtnCancelar_Click(object sender, RoutedEventArgs e)
+    private async void BtnCancelar_Click(object sender, RoutedEventArgs e)
     {
         _cts?.Cancel();
         _servicioActivo?.ForzarDesconexion();
         TxtEstadoActual.Text = "Cancelando...";
         BtnCancelar.IsEnabled = false;
+
+        var tokenAlCancelar = _tokenSincronizacionActual;
+
+        // Le damos un margen para que la desconexión se propague normalmente.
+        await Task.Delay(5000);
+
+        // Si después de 5s seguimos "atascados" en la MISMA sincronización,
+        // la abandonamos: liberamos la UI para que puedas seguir usando la app,
+        // aunque la tarea vieja siga muriendo sola en segundo plano.
+        if (_tokenSincronizacionActual == tokenAlCancelar && _sincronizando)
+        {
+            AgregarLog("=== CANCELADO (forzado; la conexión no respondió a tiempo) ===", Brushes.DarkOrange);
+            TxtEstadoActual.Text = "Cancelado (forzado)";
+            _sincronizando = false;
+            BtnCancelar.IsEnabled = false;
+            _cts = null;
+            _servicioActivo = null;
+            _tokenSincronizacionActual = null;
+        }
+    }
+
+    private void BtnVolverMenu_Click(object sender, RoutedEventArgs e)
+    {
+        if (_sincronizando)
+        {
+            MessageBox.Show("Espera a que termine o cancela la sincronización antes de volver al menú.",
+                "Ocupado", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var menu = new MenuWindow();
+        menu.Show();
+        this.Close();
     }
 }

@@ -1,0 +1,25 @@
+﻿<Window x:Class="BackupSyncApp.MenuWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Backup Sync - Menú" Height="350" Width="500"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Backup Sync" FontSize="24" FontWeight="Bold"
+                   HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Center">
+            <Button x:Name="BtnPasarArchivos" Content="Pasar archivos de servidor"
+                    Height="60" FontSize="15" Margin="0,0,0,15"
+                    Click="BtnPasarArchivos_Click"/>
+
+            <Button x:Name="BtnSacarBackups" Content="Sacar backups de servidores"
+                    Height="60" FontSize="15"
+                    Click="BtnSacarBackups_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
