@@ -1,0 +1,55 @@
+﻿<Window x:Class="BackupSyncApp.ConexionRestauracionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Conexión de restauración" Height="480" Width="480"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <StackPanel Margin="15">
+
+        <TextBlock Text="Nombre (ej: Restaurar en 182)" Margin="0,0,0,3"/>
+        <TextBox x:Name="TxtNombre" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Servidor - IP" Margin="0,0,0,3"/>
+        <TextBox x:Name="TxtServidor" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Usuario SSH" Margin="0,0,0,3"/>
+        <TextBox x:Name="TxtUsuario" Margin="0,0,0,10"/>
+
+        <Grid Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Ruta llave privada SSH (nuestra)" Margin="0,0,0,3"/>
+                <TextBox x:Name="TxtLlave"/>
+            </StackPanel>
+            <Button Grid.Column="1" Content="..." Width="30" Margin="5,18,0,0"
+                    VerticalAlignment="Top" Click="BtnBuscarLlave_Click"/>
+        </Grid>
+
+        <TextBlock Text="Instancia SQL (ej: DESKTOP-4RG5RM3\SQLEXPRESS)" Margin="0,0,0,3"/>
+        <TextBox x:Name="TxtInstanciaSql" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Carpeta con los ZIPs (ej: C:\Backups_180)" Margin="0,0,0,3"/>
+        <TextBox x:Name="TxtCarpetaZips" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Ruta de datos de SQL Server" Margin="0,0,0,3"/>
+        <Grid Margin="0,0,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" x:Name="TxtRutaDatosSql"/>
+            <Button Grid.Column="1" Content="Detectar automáticamente" Width="160" Margin="8,0,0,0"
+                    x:Name="BtnDetectar" Click="BtnDetectar_Click"/>
+        </Grid>
+        <TextBlock x:Name="TxtEstadoDeteccion" FontSize="11" Foreground="Gray" Margin="0,0,0,10"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Cancelar" Width="90" Margin="0,0,10,0" Click="BtnCancelar_Click"/>
+            <Button Content="Guardar" Width="90" Click="BtnGuardar_Click"/>
+        </StackPanel>
+
+    </StackPanel>
+</Window>

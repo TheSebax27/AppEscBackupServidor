@@ -18,8 +18,12 @@
                     Click="BtnPasarArchivos_Click"/>
 
             <Button x:Name="BtnSacarBackups" Content="Sacar backups de servidores"
-                    Height="60" FontSize="15"
+                    Height="60" FontSize="15" Margin="0,0,0,15"
                     Click="BtnSacarBackups_Click"/>
+
+            <Button x:Name="BtnRestaurar" Content="Restaurar backups"
+                    Height="60" FontSize="15"
+                    Click="BtnRestaurar_Click"/>
         </StackPanel>
     </Grid>
 </Window>

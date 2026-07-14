@@ -4,11 +4,6 @@ using System.Text;
 
 namespace BackupSyncApp.Models;
 
-/// <summary>
-/// Representa la configuración para generar un backup SQL en un servidor
-/// satélite (ej: "180", "181", "182"), equivalente a los parámetros que
-/// cambian entre tus scripts .ps1 originales.
-/// </summary>
 public class ConexionBackupSql
 {
     public string Nombre { get; set; } = "";

@@ -1,0 +1,35 @@
+﻿<Window x:Class="BackupSyncApp.ConfirmarRestauracionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Confirmar restauración" Height="460" Width="480"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="⚠ Esta acción SOBREESCRIBE las bases de datos existentes"
+                   FontWeight="Bold" Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,5"/>
+        <TextBlock Grid.Row="1" Text="No se puede deshacer. Verifica que elegiste el servidor y el ZIP correctos."
+                   Foreground="Gray" TextWrapping="Wrap" Margin="0,0,0,15"/>
+
+        <ListBox Grid.Row="2" x:Name="ListaZips" Margin="0,0,0,15"
+                  SelectionChanged="ListaZips_SelectionChanged"/>
+
+        <TextBlock Grid.Row="3" Text="Escribe RESTAURAR para habilitar el botón:" Margin="0,0,0,5"/>
+        <TextBox Grid.Row="4" x:Name="TxtConfirmacion" Margin="0,0,0,15"
+                 TextChanged="TxtConfirmacion_TextChanged"/>
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancelar" Width="90" Margin="0,0,10,0" Click="BtnCancelar_Click"/>
+            <Button x:Name="BtnConfirmar" Content="Confirmar restauración" Width="160"
+                    IsEnabled="False" Click="BtnConfirmar_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

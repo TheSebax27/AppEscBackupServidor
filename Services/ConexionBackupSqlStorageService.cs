@@ -7,10 +7,6 @@ using BackupSyncApp.Models;
 
 namespace BackupSyncApp.Services;
 
-/// <summary>
-/// Igual que ConexionStorageService, pero para las conexiones de "Sacar backups"
-/// (archivo JSON separado para no mezclarlas con las de "Pasar archivos").
-/// </summary>
 public class ConexionBackupSqlStorageService
 {
     private readonly string _rutaArchivo;
