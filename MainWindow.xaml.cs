@@ -3,6 +3,7 @@ using BackupSyncApp.Services;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace BackupSyncApp;
@@ -288,6 +289,31 @@ public partial class MainWindow : Window
 
         var menu = new MenuWindow();
         menu.Show();
+        this.Close();
+    }
+
+    // ===================== Ventana custom (sin borde nativo) =====================
+
+    private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ButtonState == MouseButtonState.Pressed)
+            this.DragMove();
+    }
+
+    private void BtnMinimizar_Click(object sender, RoutedEventArgs e)
+    {
+        this.WindowState = WindowState.Minimized;
+    }
+
+    private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+    {
+        if (_sincronizando)
+        {
+            MessageBox.Show("Espera a que termine o cancela la sincronización antes de cerrar la ventana.",
+                "Ocupado", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
         this.Close();
     }
 }

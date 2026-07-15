@@ -129,4 +129,18 @@ public partial class ConexionRestauracionWindow : Window
         DialogResult = false;
         Close();
     }
+
+    // ===================== Ventana custom (sin borde nativo) =====================
+
+    private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ButtonState == MouseButtonState.Pressed)
+            this.DragMove();
+    }
+
+    private void BtnCerrarVentana_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
 }

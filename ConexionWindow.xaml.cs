@@ -15,15 +15,15 @@ using System.Windows.Shapes;
 
 namespace BackupSyncApp
 {
-    
+
     public partial class ConexionWindow : Window
     {
 
         public ConexionBackup Conexion { get; private set; }
 
-        public ConexionWindow (ConexionBackup? conexionExistente = null)
+        public ConexionWindow(ConexionBackup? conexionExistente = null)
         {
-            InitializeComponent ();
+            InitializeComponent();
 
             Conexion = conexionExistente ?? new ConexionBackup();
 
@@ -32,15 +32,15 @@ namespace BackupSyncApp
 
         private void CargarDatosEnFormulario()
         {
-            
-                TxtNombre.Text = Conexion.Nombre;
-                TxtServidor.Text = Conexion.Servidor;
-                TxtUsuario.Text = Conexion.Usuario;
-                TxtLlave.Text = Conexion.RutaLlavePrivada;
-                TxtOrigen.Text = Conexion.RutaOrigen;
-                TxtDestino.Text = Conexion.RutaDestino;
-                ChkMoverArchivos.IsChecked = Conexion.MoverArchivos;
-            
+
+            TxtNombre.Text = Conexion.Nombre;
+            TxtServidor.Text = Conexion.Servidor;
+            TxtUsuario.Text = Conexion.Usuario;
+            TxtLlave.Text = Conexion.RutaLlavePrivada;
+            TxtOrigen.Text = Conexion.RutaOrigen;
+            TxtDestino.Text = Conexion.RutaDestino;
+            ChkMoverArchivos.IsChecked = Conexion.MoverArchivos;
+
         }
 
         private void GuardarDatosDesdeFormulario()
@@ -56,7 +56,7 @@ namespace BackupSyncApp
 
         private void BtnBuscarLlave_Click(object sender, RoutedEventArgs e)
         {
-           
+
             var dialogo = new OpenFileDialog
             {
                 Title = "Seleccionar tu llave privada SSH",
@@ -66,7 +66,7 @@ namespace BackupSyncApp
             if (dialogo.ShowDialog() == true)
             {
 
-TxtLlave.Text = dialogo.FileName;
+                TxtLlave.Text = dialogo.FileName;
 
             }
 
@@ -82,7 +82,7 @@ TxtLlave.Text = dialogo.FileName;
                 string.IsNullOrWhiteSpace(TxtOrigen.Text) ||
                 string.IsNullOrWhiteSpace(TxtDestino.Text))
             {
-                
+
                 MessageBox.Show("Por favor, completa todos los campos antes de guardar.", "Campos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -100,6 +100,20 @@ TxtLlave.Text = dialogo.FileName;
         }
 
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+
+        // ===================== Ventana custom (sin borde nativo) =====================
+
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ButtonState == MouseButtonState.Pressed)
+                this.DragMove();
+        }
+
+        private void BtnCerrarVentana_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
             Close();

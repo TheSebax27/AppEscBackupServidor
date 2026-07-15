@@ -1,67 +1,322 @@
 ﻿<Window x:Class="BackupSyncApp.ConexionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Conexión de backup" Height="420" Width="450"
+        Title="Conexión de backup" Height="700" Width="540"
         WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
         ResizeMode="NoResize">
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Nombre (ej: Contabo 1)" Margin="0,0,0,3"/>
-        <TextBox Grid.Row="1" x:Name="TxtNombre" Margin="0,0,0,10"/>
+    <Window.Resources>
 
-        <TextBlock Grid.Row="2" Text="Servidor (IP o dominio)" Margin="0,0,0,3"/>
-        <TextBox Grid.Row="3" x:Name="TxtServidor" Margin="0,0,0,10"/>
+        <!-- ===================== PALETA (misma familia de toda la app) ===================== -->
+        <Color x:Key="BgTop">#0F1120</Color>
+        <Color x:Key="BgBottom">#1B1E33</Color>
+        <Color x:Key="Accent1">#7C4DFF</Color>
+        <Color x:Key="Accent2">#00E5C7</Color>
 
-        <TextBlock Grid.Row="4" Text="Usuario SSH" Margin="0,0,0,3"/>
-        <TextBox Grid.Row="5" x:Name="TxtUsuario" Margin="0,0,0,10"/>
+        <LinearGradientBrush x:Key="WindowBg" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="{StaticResource BgTop}" Offset="0"/>
+            <GradientStop Color="{StaticResource BgBottom}" Offset="1"/>
+        </LinearGradientBrush>
 
-        <Grid Grid.Row="6" Margin="0,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0">
-                <TextBlock Text="Ruta llave privada SSH" Margin="0,0,0,3"/>
-                <TextBox x:Name="TxtLlave"/>
-            </StackPanel>
-            <Button Grid.Column="1" Content="..." Width="30" Margin="5,18,0,0"
-                    VerticalAlignment="Top" Click="BtnBuscarLlave_Click"/>
+        <LinearGradientBrush x:Key="AccentBrush" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="{StaticResource Accent1}" Offset="0"/>
+            <GradientStop Color="{StaticResource Accent2}" Offset="1"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="GlassBg" Color="#14FFFFFF"/>
+        <SolidColorBrush x:Key="GlassBorder" Color="#22FFFFFF"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#8A8FBF"/>
+        <SolidColorBrush x:Key="FieldBg" Color="#14FFFFFF"/>
+
+        <!-- ===================== BOTON DE VENTANA (cerrar) ===================== -->
+        <Style x:Key="WinBtn" TargetType="Button">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Foreground" Value="#B9BCD4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" CornerRadius="17" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#22FF5F72"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== ETIQUETA DE CAMPO ===================== -->
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="2,0,0,6"/>
+        </Style>
+
+        <!-- ===================== TEXTBOX ESTILO GLASS ===================== -->
+        <Style x:Key="FieldBox" TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource FieldBg}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="CaretBrush" Value="#00E5C7"/>
+            <Setter Property="BorderBrush" Value="{StaticResource GlassBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="b" CornerRadius="10" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="#3D4270"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="#7C4DFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== BOTON PILL SECUNDARIO (..., Cancelar) ===================== -->
+        <Style x:Key="PillBtn" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource GlassBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource GlassBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" CornerRadius="12" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#22FFFFFF"/>
+                                <Setter TargetName="b" Property="BorderBrush" Value="#7C4DFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#33FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== BOTON ACENTO (Guardar) ===================== -->
+        <Style x:Key="AccentBtn" TargetType="Button" BasedOn="{StaticResource PillBtn}">
+            <Setter Property="Foreground" Value="#0F1120"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" CornerRadius="12" Background="{StaticResource AccentBrush}" Opacity="0.95">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="b" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== BOTON MINI "..." (buscar llave) ===================== -->
+        <Style x:Key="MiniBtn" TargetType="Button" BasedOn="{StaticResource PillBtn}">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Width" Value="42"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- ===================== CHECKBOX ESTILO TOGGLE ===================== -->
+        <Style x:Key="ToggleCheck" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border CornerRadius="12" Background="{StaticResource GlassBg}"
+                                BorderBrush="{StaticResource GlassBorder}" BorderThickness="1" Padding="12,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border x:Name="box" Grid.Column="0" Width="22" Height="22" CornerRadius="7"
+                                        BorderBrush="{StaticResource GlassBorder}" BorderThickness="1"
+                                        Background="Transparent" Margin="0,0,10,0" VerticalAlignment="Top">
+                                    <TextBlock x:Name="mark" Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                               Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Opacity="0"/>
+                                </Border>
+
+                                <ContentPresenter Grid.Column="1" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="box" Property="Background" Value="{StaticResource AccentBrush}"/>
+                                <Setter TargetName="box" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                <Setter TargetName="mark" Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="box" Property="BorderBrush" Value="#7C4DFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== SCROLLBAR OSCURO ===================== -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Track Name="PART_Track" IsDirectionReversed="True">
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Border CornerRadius="4" Background="#3A3F63" Margin="1"/>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- ===================== VENTANA ===================== -->
+    <Border CornerRadius="24" Background="{StaticResource WindowBg}" BorderBrush="{StaticResource GlassBorder}" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.5" BlurRadius="40" ShadowDepth="0"/>
+        </Border.Effect>
+
+        <Grid Margin="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ===== barra superior custom ===== -->
+            <Grid Grid.Row="0" MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+                <StackPanel Orientation="Horizontal" Margin="24,0,0,0" VerticalAlignment="Center">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" Margin="0,0,10,0"/>
+                    <TextBlock Text="CONEXIÓN DE BACKUP" Foreground="{StaticResource TextMuted}"
+                               FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                    <Button Content="&#xE8BB;" Style="{StaticResource WinBtn}" Click="BtnCerrarVentana_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- ===== contenido ===== -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Margin="0,4,0,0">
+                    <StackPanel Margin="30,6,30,10">
+
+                        <TextBlock Text="Datos de conexión" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,4"/>
+                        <TextBlock Text="Origen remoto y destino local para pasar archivos" FontSize="12"
+                                   Foreground="{StaticResource TextMuted}" Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Nombre (ej: Contabo 1)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TxtNombre" Style="{StaticResource FieldBox}" Margin="0,0,0,14"/>
+
+                        <TextBlock Text="Servidor (IP o dominio)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TxtServidor" Style="{StaticResource FieldBox}" Margin="0,0,0,14"/>
+
+                        <TextBlock Text="Usuario SSH" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TxtUsuario" Style="{StaticResource FieldBox}" Margin="0,0,0,14"/>
+
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Ruta llave privada SSH" Style="{StaticResource FieldLabel}"/>
+                                <TextBox x:Name="TxtLlave" Style="{StaticResource FieldBox}"/>
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="..." Style="{StaticResource MiniBtn}"
+                                    VerticalAlignment="Bottom" Click="BtnBuscarLlave_Click"/>
+                        </Grid>
+
+                        <Separator Background="{StaticResource GlassBorder}" Height="1" Margin="0,6,0,16"/>
+
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="16"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Ruta origen (remota)" Style="{StaticResource FieldLabel}"/>
+                                <TextBox x:Name="TxtOrigen" Style="{StaticResource FieldBox}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Ruta destino (local)" Style="{StaticResource FieldLabel}"/>
+                                <TextBox x:Name="TxtDestino" Style="{StaticResource FieldBox}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <CheckBox x:Name="ChkMoverArchivos"
+                                  Content="Borrar original remoto tras verificar (mover en vez de copiar)"
+                                  Style="{StaticResource ToggleCheck}"/>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ===== pie con acciones ===== -->
+                <Border Grid.Row="1" BorderBrush="{StaticResource GlassBorder}" BorderThickness="0,1,0,0" Padding="30,16">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Cancelar" Style="{StaticResource PillBtn}" Width="100" Margin="0,0,10,0" Click="BtnCancelar_Click"/>
+                        <Button Content="Guardar" Style="{StaticResource AccentBtn}" Width="110" Click="BtnGuardar_Click"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
-
-        <Grid Grid.Row="7" Margin="0,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Margin="0,0,5,0">
-                <TextBlock Text="Ruta origen (remota)" Margin="0,0,0,3"/>
-                <TextBox x:Name="TxtOrigen"/>
-            </StackPanel>
-            <StackPanel Grid.Column="1" Margin="5,0,0,0">
-                <TextBlock Text="Ruta destino (local)" Margin="0,0,0,3"/>
-                <TextBox x:Name="TxtDestino"/>
-            </StackPanel>
-        </Grid>
-
-        <CheckBox Grid.Row="8" x:Name="ChkMoverArchivos"
-                   Content="Borrar original remoto tras verificar (mover en vez de copiar)"
-                   VerticalAlignment="Top" Margin="0,5,0,0"/>
-
-        <StackPanel Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-            <Button Content="Cancelar" Width="90" Margin="0,0,10,0" Click="BtnCancelar_Click"/>
-            <Button Content="Guardar" Width="90" Click="BtnGuardar_Click"/>
-        </StackPanel>
-    </Grid>
+    </Border>
 </Window>
