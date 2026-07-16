@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace BackupSyncApp.Models;
 
-namespace BackupSyncApp.Models;
-
+/// <summary>
+/// Representa la configuración para generar un backup SQL en un servidor
+/// satélite (ej: "180", "181", "182"), equivalente a los parámetros que
+/// cambian entre tus scripts .ps1 originales.
+/// </summary>
 public class ConexionBackupSql
 {
+    // Identificador estable (no cambia aunque renombres la conexión).
+    // Se usa para que las tareas programadas sepan a cuál conexión referirse.
+    public string? Id { get; set; }
+
     public string Nombre { get; set; } = "";
 
     // Datos para que NOSOTROS (esta app) nos conectemos por SSH al servidor satélite

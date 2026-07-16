@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Text;
-using System.IO;
 using Renci.SshNet;
 using BackupSyncApp.Models;
 
@@ -116,7 +114,7 @@ public class GeneradorBackupService
         sb.AppendLine("$TimestampPath = Get-Date -Format 'yyyyMMdd_HHmmss'");
         sb.AppendLine($"$BackupPath = '{backupPath}'");
         sb.AppendLine("$DatedBackupPath = Join-Path $BackupPath $TimestampPath");
-        sb.AppendLine("$SQLQuery = \"SELECT name FROM sys.databases WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')\"");
+        sb.AppendLine("$SQLQuery = \"SET NOCOUNT ON; SELECT name FROM sys.databases WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')\"");
         sb.AppendLine("Write-Host \"Consultando bases de datos de $ServerInstance...\"");
         sb.AppendLine("$DatabaseList = sqlcmd -S $ServerInstance -E -Q $SQLQuery -h -1 -W | Select-Object -Skip 1");
         sb.AppendLine("$DatabaseList = $DatabaseList | Where-Object { $_ -ne $null -and $_ -ne '' }");
@@ -136,18 +134,32 @@ public class GeneradorBackupService
         sb.AppendLine("$FinalZipFile = Join-Path $BackupPath $FinalZipName");
         sb.AppendLine("Compress-Archive -Path \"$DatedBackupPath\\*\" -DestinationPath $FinalZipFile -Force");
 
+        // Solo borramos la carpeta con los .bak sueltos si el ZIP quedó bien
+        // creado — así no duplicamos el espacio en disco (antes quedaban
+        // los .bak Y el .zip al mismo tiempo, ocupando el doble).
+        sb.AppendLine("if (Test-Path $FinalZipFile) {");
+        sb.AppendLine("    Write-Host \"ZIP creado correctamente. Borrando carpeta temporal $TimestampPath para liberar espacio...\"");
+        sb.AppendLine("    Remove-Item $DatedBackupPath -Recurse -Force");
+        sb.AppendLine("} else {");
+        sb.AppendLine("    Write-Host \"[AVISO] El ZIP no se creó correctamente. Se conserva la carpeta $TimestampPath por seguridad.\"");
+        sb.AppendLine("}");
+
         if (conexion.EnviarAlCentralPorScp)
         {
             var centralUsuario = conexion.CentralUsuario.Replace("'", "''");
             var centralIp = conexion.CentralIp.Replace("'", "''");
-            var centralDestino = conexion.CentralDestino.Replace("'", "''").Replace('\\', '/');
+            var centralDestino = conexion.CentralDestino.Replace("'", "''");
             var centralLlave = conexion.CentralRutaLlaveEnSatelite.Replace("'", "''");
 
             sb.AppendLine("Write-Host \"Enviando el archivo ZIP al servidor central...\"");
             sb.AppendLine($"$PathKeySSH = '{centralLlave}'");
             sb.AppendLine("if (Test-Path $FinalZipFile) {");
-            sb.AppendLine($"    scp -i $PathKeySSH -o StrictHostKeyChecking=accept-new $FinalZipFile \"{centralUsuario}@{centralIp}:{centralDestino}\"");
-            sb.AppendLine("    Write-Host \"Envío completado.\"");
+            sb.AppendLine($"    scp -q -i $PathKeySSH -o StrictHostKeyChecking=accept-new -o BatchMode=yes $FinalZipFile \"{centralUsuario}@{centralIp}:{centralDestino}\"");
+            sb.AppendLine("    if ($LASTEXITCODE -eq 0) {");
+            sb.AppendLine("        Write-Host \"Envío completado.\"");
+            sb.AppendLine("    } else {");
+            sb.AppendLine("        Write-Host \"[ERROR] scp terminó con código de salida $LASTEXITCODE\"");
+            sb.AppendLine("    }");
             sb.AppendLine("}");
             sb.AppendLine("else {");
             sb.AppendLine("    Write-Host \"[AVISO] No se encontró el ZIP final, no se envió nada.\"");
