@@ -4,50 +4,40 @@ using BackupSyncApp.Models;
 
 namespace BackupSyncApp.Services;
 
-/// <summary>
-/// Persiste la lista de conexiones en un archivo JSON dentro de
-/// %AppData%\BackupSyncApp\conexiones.json, para que sobrevivan
-/// entre ejecuciones de la app.
-/// </summary>
-public class ConexionStorageService
+public class ConexionBackupContaboStorageService
 {
     private readonly string _rutaArchivo;
 
-    public ConexionStorageService()
+    public ConexionBackupContaboStorageService()
     {
         var carpetaConfig = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "BackupSyncApp");
 
         Directory.CreateDirectory(carpetaConfig);
-        _rutaArchivo = Path.Combine(carpetaConfig, "conexiones.json");
+        _rutaArchivo = Path.Combine(carpetaConfig, "conexiones_backup_contabo.json");
     }
 
-    public List<ConexionBackup> Cargar()
+    public List<ConexionBackupContabo> Cargar()
     {
         if (!File.Exists(_rutaArchivo))
         {
-            return new List<ConexionBackup>();
+            return new List<ConexionBackupContabo>();
         }
 
         var json = File.ReadAllText(_rutaArchivo);
-        List<ConexionBackup> conexiones;
+        List<ConexionBackupContabo> conexiones;
 
         try
         {
-            conexiones = JsonSerializer.Deserialize<List<ConexionBackup>>(json)
-                         ?? new List<ConexionBackup>();
+            conexiones = JsonSerializer.Deserialize<List<ConexionBackupContabo>>(json)
+                         ?? new List<ConexionBackupContabo>();
         }
         catch (JsonException)
         {
-            // Si el archivo está corrupto, no lo borramos (por seguridad),
-            // solo devolvemos una lista vacía para que la app no truene.
-            return new List<ConexionBackup>();
+            return new List<ConexionBackupContabo>();
         }
 
-        // Conexiones guardadas antes de que existiera el campo Id: se les
-        // asigna uno ahora y se guarda de inmediato para que quede fijo
-        // (si no hiciéramos esto, cada carga generaría un Id distinto).
         bool huboCambios = false;
         foreach (var conexion in conexiones)
         {
@@ -65,7 +55,7 @@ public class ConexionStorageService
         return conexiones;
     }
 
-    public void Guardar(List<ConexionBackup> conexiones)
+    public void Guardar(List<ConexionBackupContabo> conexiones)
     {
         foreach (var conexion in conexiones)
         {

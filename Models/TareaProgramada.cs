@@ -1,16 +1,30 @@
 ﻿namespace BackupSyncApp.Models;
 
 /// <summary>
+/// De qué tipo de conexión sale el backup que se va a programar.
+/// </summary>
+public enum TipoTareaOrigen
+{
+    BackupSqlWindows,   // ConexionBackupSql (180/181/182)
+    ContaboBaseDatos,   // ConexionBackupContabo -> GenerarBackupBaseDatos
+    ContaboArchivos     // ConexionBackupContabo -> GenerarBackupArchivos
+}
+
+/// <summary>
 /// Representa una programación: "todos los lunes a medianoche, saca backup
-/// del servidor X y luego bájalo a mi disco".
+/// del servidor X y luego bájalo a mi disco". Soporta cualquiera de los 3
+/// tipos de backup que existen en la app.
 /// </summary>
 public class TareaProgramada
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Nombre { get; set; } = "";
 
-    // A cuál conexión de "Sacar backups" (ConexionBackupSql) referencia
-    public string ConexionBackupSqlId { get; set; } = "";
+    public TipoTareaOrigen Tipo { get; set; } = TipoTareaOrigen.BackupSqlWindows;
+
+    // Id de la conexión de origen: ConexionBackupSql.Id o ConexionBackupContabo.Id
+    // según lo que diga Tipo.
+    public string ConexionOrigenId { get; set; } = "";
 
     // Encadenar con "Pasar archivos" después de generar el backup.
     // ConexionArchivosId es opcional: solo se usa si EncadenarConSincronizacion = true.
@@ -32,8 +46,17 @@ public class TareaProgramada
     // registrada en el Programador de Tareas de Windows.
     public bool RegistradaEnWindows { get; set; } = false;
 
+    private string EtiquetaTipo => Tipo switch
+    {
+        TipoTareaOrigen.BackupSqlWindows => "SQL Windows",
+        TipoTareaOrigen.ContaboBaseDatos => "Contabo · BD",
+        TipoTareaOrigen.ContaboArchivos => "Contabo · Archivos",
+        _ => "?"
+    };
+
     // Solo para mostrar en la lista, no se usa para nada más.
     public string ResumenHorario =>
-        $"{Hora:D2}:{Minuto:D2} · {(Dias.Count == 7 ? "Diario" : string.Join(",", Dias.Select(d => d.ToString().Substring(0, 3))))} · " +
+        $"{EtiquetaTipo} · {Hora:D2}:{Minuto:D2} · " +
+        $"{(Dias.Count == 7 ? "Diario" : string.Join(",", Dias.Select(d => d.ToString().Substring(0, 3))))} · " +
         (Activada ? "Activada" : "Desactivada");
 }

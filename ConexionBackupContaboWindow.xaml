@@ -1,0 +1,79 @@
+﻿<Window x:Class="BackupSyncApp.ConexionBackupContaboWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Conexión de backup Contabo" Height="700" Width="480"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="15">
+
+            <TextBlock Text="Nombre (ej: Contabo 1)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtNombre" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Servidor - IP" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtServidor" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Usuario SSH" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtUsuario" Margin="0,0,0,10"/>
+
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Ruta llave privada SSH (nuestra)" Margin="0,0,0,3"/>
+                    <TextBox x:Name="TxtLlave"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="..." Width="30" Margin="5,18,0,0"
+                        VerticalAlignment="Top" Click="BtnBuscarLlave_Click"/>
+            </Grid>
+
+            <Separator Margin="0,5,0,10"/>
+            <TextBlock Text="Backup de base de datos" FontWeight="Bold" Margin="0,0,0,8"/>
+
+            <TextBlock Text="Nombre de la base de datos" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtNombreBd" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Tablas a respaldar (una por línea)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtTablas" Height="90" AcceptsReturn="True" TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Carpeta backup local en el Contabo (ej: /var/backups/backup_db_documents)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtCarpetaBackupDb" Margin="0,0,0,10"/>
+
+            <Separator Margin="0,5,0,10"/>
+            <TextBlock Text="Backup de archivos" FontWeight="Bold" Margin="0,0,0,3"/>
+            <TextBlock Text="La PRIMERA carpeta de la lista se conserva; el resto se vacía tras el envío."
+                       FontSize="11" Foreground="Gray" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+            <TextBlock Text="Carpetas de origen (una por línea, orden importa)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtCarpetasOrigen" Height="90" AcceptsReturn="True" TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto" Margin="0,0,0,10"/>
+
+            <Separator Margin="0,5,0,10"/>
+            <TextBlock Text="Envío al servidor central (compartido para BD y archivos)" FontWeight="Bold" Margin="0,0,0,8"/>
+
+            <TextBlock Text="Usuario SSH del central" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtCentralUsuario" Margin="0,0,0,10"/>
+
+            <TextBlock Text="IP del servidor central" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtCentralIp" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Ruta destino en el central (BD)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtCentralDestinoDb" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Ruta destino en el central (Archivos)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtCentralDestinoArchivos" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Ruta llave SSH (la que ya está guardada en el Contabo)" Margin="0,0,0,3"/>
+            <TextBox x:Name="TxtLlaveEnContabo" Margin="0,0,0,15"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancelar" Width="90" Margin="0,0,10,0" Click="BtnCancelar_Click"/>
+                <Button Content="Guardar" Width="90" Click="BtnGuardar_Click"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

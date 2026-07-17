@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Input;
 
 namespace BackupSyncApp;
 
@@ -31,21 +30,17 @@ public partial class MenuWindow : Window
         this.Close();
     }
 
-    // ==== Lógica para la ventana sin bordes (WindowStyle="None") ====
-
-    private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private void BtnProgramacion_Click(object sender, RoutedEventArgs e)
     {
-        if (e.ButtonState == MouseButtonState.Pressed)
-            this.DragMove();
+        var ventana = new ProgramacionWindow();
+        ventana.Show();
+        this.Close();
     }
 
-    private void BtnMinimizar_Click(object sender, RoutedEventArgs e)
+    private void BtnContabo_Click(object sender, RoutedEventArgs e)
     {
-        this.WindowState = WindowState.Minimized;
-    }
-
-    private void BtnCerrar_Click(object sender, RoutedEventArgs e)
-    {
+        var ventana = new ContaboWindow();
+        ventana.Show();
         this.Close();
     }
 }
