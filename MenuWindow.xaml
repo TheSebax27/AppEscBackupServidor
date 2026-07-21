@@ -1,37 +1,295 @@
 ﻿<Window x:Class="BackupSyncApp.MenuWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Backup Sync - Menú" Height="560" Width="500"
-        WindowStartupLocation="CenterScreen">
-    <Grid Margin="30">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        Title="Backup Sync" Height="760" Width="720"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="CanMinimize">
 
-        <TextBlock Grid.Row="0" Text="Backup Sync" FontSize="24" FontWeight="Bold"
-                   HorizontalAlignment="Center" Margin="0,0,0,30"/>
+    <Window.Resources>
 
-        <StackPanel Grid.Row="1" VerticalAlignment="Center">
-            <Button x:Name="BtnPasarArchivos" Content="Pasar archivos de servidor"
-                    Height="60" FontSize="15" Margin="0,0,0,15"
-                    Click="BtnPasarArchivos_Click"/>
+        <!-- ===================== PALETA ===================== -->
+        <Color x:Key="BgTop">#0F1120</Color>
+        <Color x:Key="BgBottom">#1B1E33</Color>
+        <Color x:Key="Accent1">#7C4DFF</Color>
+        <Color x:Key="Accent2">#00E5C7</Color>
+        <Color x:Key="Accent3">#FF5FA2</Color>
 
-            <Button x:Name="BtnSacarBackups" Content="Sacar backups de servidores"
-                    Height="60" FontSize="15" Margin="0,0,0,15"
-                    Click="BtnSacarBackups_Click"/>
+        <LinearGradientBrush x:Key="WindowBg" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="{StaticResource BgTop}" Offset="0"/>
+            <GradientStop Color="{StaticResource BgBottom}" Offset="1"/>
+        </LinearGradientBrush>
 
-            <Button x:Name="BtnRestaurar" Content="Restaurar backups"
-                    Height="60" FontSize="15" Margin="0,0,0,15"
-                    Click="BtnRestaurar_Click"/>
+        <LinearGradientBrush x:Key="AccentBrush" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="{StaticResource Accent1}" Offset="0"/>
+            <GradientStop Color="{StaticResource Accent2}" Offset="1"/>
+        </LinearGradientBrush>
 
-            <Button x:Name="BtnProgramacion" Content="Backups automáticos"
-                    Height="60" FontSize="15" Margin="0,0,0,15"
-                    Click="BtnProgramacion_Click"/>
+        <LinearGradientBrush x:Key="GlassBrush" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#22FFFFFF" Offset="0"/>
+            <GradientStop Color="#0AFFFFFF" Offset="1"/>
+        </LinearGradientBrush>
 
-            <Button x:Name="BtnContabo" Content="Backups Contabo"
-                    Height="60" FontSize="15"
-                    Click="BtnContabo_Click"/>
-        </StackPanel>
-    </Grid>
+        <!-- ===================== BOTÓN DE VENTANA (cerrar) ===================== -->
+        <Style x:Key="WinBtn" TargetType="Button">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Foreground" Value="#B9BCD4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" CornerRadius="17" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#22FF5F72"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== BOTÓN PEQUEÑO DEL PIE (Exportar/Importar) ===================== -->
+        <Style x:Key="FooterBtn" TargetType="Button">
+            <Setter Property="Foreground" Value="#B9BCD4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#2AFFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" CornerRadius="12"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#14FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===================== ESTILO BOTONES PRINCIPALES ===================== -->
+        <Style x:Key="MenuCard" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource GlassBrush}"/>
+            <Setter Property="BorderBrush" Value="#2AFFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="card" CornerRadius="18"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Border.Effect>
+                                <DropShadowEffect x:Name="shadow" Color="#000000" Opacity="0.35"
+                                                   BlurRadius="18" ShadowDepth="6" Direction="270"/>
+                            </Border.Effect>
+
+                            <Grid Margin="22,0,22,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- icono circular -->
+                                <Border x:Name="iconBg" Grid.Column="0" Width="46" Height="46" CornerRadius="23"
+                                        Background="{StaticResource AccentBrush}" Margin="0,0,18,0">
+                                    <TextBlock x:Name="icon" Text="{TemplateBinding Tag}"
+                                               FontFamily="Segoe MDL2 Assets" FontSize="20"
+                                               Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+
+                                <ContentPresenter Grid.Column="1" VerticalAlignment="Center"
+                                                   Content="{TemplateBinding Content}"/>
+
+                                <TextBlock x:Name="arrow" Grid.Column="2" Text="&#xE72A;"
+                                           FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                           Foreground="#7C82AE" VerticalAlignment="Center"
+                                           RenderTransformOrigin="0.5,0.5">
+                                    <TextBlock.RenderTransform>
+                                        <TranslateTransform x:Name="arrowT" X="0"/>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Grid>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="card"
+                                                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                            To="#7C4DFF" Duration="0:0:0.18"/>
+                                            <DoubleAnimation Storyboard.TargetName="shadow"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             To="0.6" Duration="0:0:0.18"/>
+                                            <DoubleAnimation Storyboard.TargetName="shadow"
+                                                             Storyboard.TargetProperty="BlurRadius"
+                                                             To="26" Duration="0:0:0.18"/>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                To="0,-4,0,4" Duration="0:0:0.18"/>
+                                            <DoubleAnimation Storyboard.TargetName="arrowT"
+                                                             Storyboard.TargetProperty="X"
+                                                             To="6" Duration="0:0:0.18"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="shadow"
+                                                             Storyboard.TargetProperty="Opacity"
+                                                             To="0.35" Duration="0:0:0.18"/>
+                                            <DoubleAnimation Storyboard.TargetName="shadow"
+                                                             Storyboard.TargetProperty="BlurRadius"
+                                                             To="18" Duration="0:0:0.18"/>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                To="0,0,0,0" Duration="0:0:0.18"/>
+                                            <DoubleAnimation Storyboard.TargetName="arrowT"
+                                                             Storyboard.TargetProperty="X"
+                                                             To="0" Duration="0:0:0.18"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="card" Property="Background" Value="#33FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- ===================== VENTANA ===================== -->
+    <Border CornerRadius="24" Background="{StaticResource WindowBg}" BorderBrush="#2AFFFFFF" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.5" BlurRadius="40" ShadowDepth="0"/>
+        </Border.Effect>
+
+        <Grid Margin="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="52"/>
+            </Grid.RowDefinitions>
+
+            <!-- ===== barra superior (custom, sin bordes de Windows) ===== -->
+            <Grid Grid.Row="0" MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+                <StackPanel Orientation="Horizontal" Margin="24,0,0,0" VerticalAlignment="Center">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" Margin="0,0,10,0"/>
+                    <TextBlock Text="BACKUP SYNC" Foreground="#8A8FBF" FontSize="12"
+                               FontWeight="Bold" VerticalAlignment="Center"
+                               FontFamily="Segoe UI" TextOptions.TextFormattingMode="Ideal"
+                               />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                    <Button Content="&#xE921;" Style="{StaticResource WinBtn}" Click="BtnMinimizar_Click"/>
+                    <Button Content="&#xE8BB;" Style="{StaticResource WinBtn}" Click="BtnCerrar_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- ===== contenido principal ===== -->
+            <Grid Grid.Row="1" Margin="50,10,50,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Panel de control" FontSize="34" FontWeight="Bold"
+                           Foreground="White" Margin="0,10,0,4"/>
+                <TextBlock Grid.Row="1" Text="Elegí una acción para empezar a sincronizar tus datos"
+                           FontSize="14" Foreground="#8A8FBF" Margin="0,0,0,28"/>
+
+                <StackPanel Grid.Row="2" VerticalAlignment="Center">
+
+                    <Button x:Name="BtnPasarArchivos" Tag="&#xE8DE;" Height="72" Margin="0,0,0,16"
+                            Style="{StaticResource MenuCard}" Click="BtnPasarArchivos_Click">
+                        <StackPanel>
+                            <TextBlock Text="Pasar archivos de servidor" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Text="Transferí archivos hacia o desde el servidor" FontSize="12" Foreground="#8A8FBF" Margin="0,3,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="BtnSacarBackups" Tag="&#xE896;" Height="72" Margin="0,0,0,16"
+                            Style="{StaticResource MenuCard}" Click="BtnSacarBackups_Click">
+                        <StackPanel>
+                            <TextBlock Text="Sacar backups de servidores" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Text="Generá una copia de seguridad actual" FontSize="12" Foreground="#8A8FBF" Margin="0,3,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="BtnRestaurar" Tag="&#xE777;" Height="72" Margin="0,0,0,16"
+                            Style="{StaticResource MenuCard}" Click="BtnRestaurar_Click">
+                        <StackPanel>
+                            <TextBlock Text="Restaurar backups" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Text="Recuperá una copia previamente guardada" FontSize="12" Foreground="#8A8FBF" Margin="0,3,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="BtnProgramacion" Tag="&#xE787;" Height="72" Margin="0,0,0,16"
+                            Style="{StaticResource MenuCard}" Click="BtnProgramacion_Click">
+                        <StackPanel>
+                            <TextBlock Text="Backups automáticos" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Text="Programá tareas de respaldo periódicas" FontSize="12" Foreground="#8A8FBF" Margin="0,3,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="BtnContabo" Tag="&#xE753;" Height="72"
+                            Style="{StaticResource MenuCard}" Click="BtnContabo_Click">
+                        <StackPanel>
+                            <TextBlock Text="Backups Contabo" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Text="Gestioná los respaldos alojados en Contabo" FontSize="12" Foreground="#8A8FBF" Margin="0,3,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+            </Grid>
+
+            <!-- ===== pie ===== -->
+            <Border Grid.Row="2" BorderBrush="#1AFFFFFF" BorderThickness="0,1,0,0">
+                <Grid Margin="24,0">
+                    <TextBlock Text="v1.0 · Backup Sync" Foreground="#5B5F87" FontSize="11"
+                               HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button Content="Exportar configuración" Style="{StaticResource FooterBtn}"
+                                Margin="0,0,8,0" Click="BtnExportarConfig_Click"/>
+                        <Button Content="Importar configuración" Style="{StaticResource FooterBtn}"
+                                Click="BtnImportarConfig_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Border>
 </Window>

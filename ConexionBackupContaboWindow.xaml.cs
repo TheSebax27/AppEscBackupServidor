@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using Microsoft.Win32;
 using BackupSyncApp.Models;
 
@@ -137,5 +138,50 @@ public partial class ConexionBackupContaboWindow : Window
     {
         DialogResult = false;
         Close();
+    }
+
+    // ===================== Ventana custom (sin borde nativo) =====================
+
+    private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ButtonState == MouseButtonState.Pressed)
+            this.DragMove();
+    }
+
+    private void BtnCerrarVentana_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+
+    // Si la pantalla es más chica que la ventana (o el owner la abrió fuera
+    // de rango), la reacomodamos para que siempre quede completa y visible,
+    // con la barra superior (para arrastrar) y los botones del pie alcanzables.
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+        var area = SystemParameters.WorkArea;
+
+        if (Height > area.Height)
+        {
+            Height = area.Height - 20;
+        }
+
+        if (Width > area.Width)
+        {
+            Width = area.Width - 20;
+        }
+
+        if (Top < area.Top) Top = area.Top + 10;
+        if (Left < area.Left) Left = area.Left + 10;
+
+        if (Top + Height > area.Top + area.Height)
+        {
+            Top = Math.Max(area.Top, area.Top + area.Height - Height - 10);
+        }
+
+        if (Left + Width > area.Left + area.Width)
+        {
+            Left = Math.Max(area.Left, area.Left + area.Width - Width - 10);
+        }
     }
 }

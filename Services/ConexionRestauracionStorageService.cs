@@ -1,50 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using BackupSyncApp.Models;
 
-namespace BackupSyncApp.Services
+namespace BackupSyncApp.Services;
+
+public class ConexionRestauracionStorageService
 {
-    public class ConexionRestauracionStorageService
+    private readonly string _rutaArchivo;
+
+    public ConexionRestauracionStorageService()
     {
+        var carpetaConfig = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "BackupSyncApp");
 
-        private readonly string _rutaArchivo;
+        Directory.CreateDirectory(carpetaConfig);
+        _rutaArchivo = Path.Combine(carpetaConfig, "conexiones_restauracion.json");
+    }
 
-        public ConexionRestauracionStorageService()
+    public List<ConexionRestauracion> Cargar()
+    {
+        if (!File.Exists(_rutaArchivo))
         {
-            var carpetaConfig = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "BackupSyncApp");
-            System.IO.Directory.CreateDirectory(carpetaConfig);
-            _rutaArchivo = System.IO.Path.Combine(carpetaConfig, "conexiones_restauracion.json");
+            return new List<ConexionRestauracion>();
         }
 
-        public List<Models.ConexionRestauracion> Cargar()
+        var json = File.ReadAllText(_rutaArchivo);
+        List<ConexionRestauracion> conexiones;
+
+        try
         {
-            if (!File.Exists(_rutaArchivo))
+            conexiones = JsonSerializer.Deserialize<List<ConexionRestauracion>>(json)
+                         ?? new List<ConexionRestauracion>();
+        }
+        catch (JsonException)
+        {
+            return new List<ConexionRestauracion>();
+        }
+
+        bool huboCambios = false;
+        foreach (var conexion in conexiones)
+        {
+            if (string.IsNullOrEmpty(conexion.Id))
             {
-                return new List<ConexionRestauracion>();
+                conexion.Id = Guid.NewGuid().ToString();
+                huboCambios = true;
             }
-            var json = File.ReadAllText(_rutaArchivo);
-            try
+        }
+        if (huboCambios)
+        {
+            Guardar(conexiones);
+        }
+
+        return conexiones;
+    }
+
+    public void Guardar(List<ConexionRestauracion> conexiones)
+    {
+        foreach (var conexion in conexiones)
+        {
+            if (string.IsNullOrEmpty(conexion.Id))
             {
-                return JsonSerializer.Deserialize<List<ConexionRestauracion>>(json)
-                       ?? new List<ConexionRestauracion>();
-            }
-            catch (JsonException)
-            {
-                return new List<Models.ConexionRestauracion>();
+                conexion.Id = Guid.NewGuid().ToString();
             }
         }
 
-        public void Guardar(List<Models.ConexionRestauracion> conexiones)
-        {
-            var opciones = new JsonSerializerOptions { WriteIndented = true };
-            var json = JsonSerializer.Serialize(conexiones, opciones);
-            File.WriteAllText(_rutaArchivo, json);
-        }
-
+        var opciones = new JsonSerializerOptions { WriteIndented = true };
+        var json = JsonSerializer.Serialize(conexiones, opciones);
+        File.WriteAllText(_rutaArchivo, json);
     }
 }
